@@ -1,0 +1,45 @@
+services:
+  db:
+    image: mysql:8.0
+    container_name: pamela-db
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: pamela
+      MYSQL_USER: pamela
+      MYSQL_PASSWORD: pame1234
+    ports:
+      - "3307:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-prootpassword"]
+      interval: 5s
+      retries: 10
+      start_period: 5s
+
+  backend:
+    build: .
+    container_name: pamela-backend
+    restart: always
+    environment:
+      DB_HOST: db
+      DB_USER: pamela
+      DB_PASSWORD: pame1234
+      DB_NAME: pamela
+      DB_PORT: 3306
+      DB_DIALECT: mysql
+      ADMIN_USER: admin
+      ADMIN_PASSWORD: superseguro123
+      BASE_URL: https://pamela-web-page.vercel.app
+      FRONT_ORIGIN: https://pamela-web-page.vercel.app
+      SESSION_SECRET: supersecreto
+    ports:
+      - "3000:3000"
+    depends_on:
+      db:
+        condition: service_healthy
+    command: npm start
+
+volumes:
+  db_data:

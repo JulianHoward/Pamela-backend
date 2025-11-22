@@ -4,6 +4,11 @@ dotenv.config();
 
 const router = Router();
 
+// Esta ruta GET es solo para probar que el router funciona
+router.get("/", (req, res) => {
+  res.send("Ruta Auth funcionando 🚀");
+});
+
 // Login
 router.post("/login", (req, res) => {
   const username = req.body.username ?? "";
