@@ -15,7 +15,10 @@ export default (sequelize, Sequelize) => {
     imagen: {
       type: Sequelize.VIRTUAL,
       get() {
-        return this.imagen_url || `http://localhost:3000/images/noticias/${this.id}.jpg`;
+        return (
+          this.imagen_url ||
+          `http://localhost:3000/images/noticias/${this.id}.jpg`
+        );
       },
     },
     creado_en: {
