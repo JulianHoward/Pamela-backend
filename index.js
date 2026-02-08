@@ -31,18 +31,21 @@ app.use(
     saveUninitialized: false,
     cookie: {
       httpOnly: true,
-      secure: isProd, // HTTPS en producción
-      sameSite: isProd ? "none" : "lax",
+      secure: isProd,           // HTTPS obligatorio en producción
+      sameSite: isProd ? "none" : "lax", // cookies cross-site en producción
       maxAge: 1000 * 60 * 60 * 8, // 8 horas
     },
   })
 );
 
 // ========= CORS =========
+if (!process.env.FRONT_ORIGIN) {
+  console.warn("⚠️  Variable FRONT_ORIGIN no definida. Usando http://localhost:3001");
+}
 app.use(
   cors({
-    origin: process.env.FRONT_ORIGIN || "http://localhost:3001",
-    credentials: true,
+    origin: process.env.FRONT_ORIGIN || "http://localhost:3001", // frontend remoto o local
+    credentials: true, // importante para que envíe cookies
     methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
   })
@@ -88,7 +91,6 @@ db.sequelize
   .catch((err) => console.error("❌ Error al sincronizar DB:", err));
 
 // ========= Rutas =========
-// app.use("/api/noticias", loginMiddleware, noticiasRouter); // opcional si quieres protección con Basic Auth
 app.use("/api/auth", authRouter);
 app.use("/api/noticias", noticiasRouter);
 
@@ -96,4 +98,3 @@ app.use("/api/noticias", noticiasRouter);
 app.listen(port, () => {
   console.log(`🚀 Servidor corriendo en http://localhost:${port}`);
 });
-
